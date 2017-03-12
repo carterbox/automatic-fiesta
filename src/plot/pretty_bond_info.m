@@ -1,4 +1,4 @@
-function [h] = pretty_bond_info(bond)
+function [h] = pretty_bond_info(bond, key)
 % Create a pretty bond information graphic showing adhesive penetration and
 % bondline deformation together
 %
@@ -16,10 +16,10 @@ function [h] = pretty_bond_info(bond)
 %% Some parameters
 bond = bond.get_bins();
 
-ModLim = log10([1e6, 1e12]); % MPa
+ModLim = log10([1e-12, 1e-8]); % MPa
 
 obuffer = 0.8; % in
-ibuffer = 0.1; % in
+ibuffer = 0.15; % in
 side_lengths = (bond.limits(2,:) - bond.limits(1,:))...
                .* bond.resolution{1} * 2;
 
@@ -44,8 +44,10 @@ A.XAxisLocation = 'Top';
 colorbar('Location', 'northoutside');
 caxis([0,1]);
 % A.DataAspectRatio = [1, size(adhesive_map, T), 1];
-title('Max Adhesive Volume %', 'FontSize', 12);
-ylabel(A, 'T [mm]');
+title('Maximum Adhesive Volume Fraction', 'FontSize', 12);
+ylabel(A, 'Tangential [mm]');
+grid on;
+grid minor;
 
 
 %% B
@@ -58,33 +60,39 @@ B.YDir = 'reverse';
 % colorbar('Location', 'westoutside');
 caxis([0,1]);
 % B.DataAspectRatio = [1, size(adhesive_map, T), 1];
-xlabel(B, 'R [mm]');
-ylabel(B, 'L [mm]');
+xlabel(B, 'Radial [mm]');
+ylabel(B, 'Longitudinal [mm]');
+grid on;
+grid minor;
 
 
 %% C
 subplot(C);
-modulus_average = permute(mean(bond.modulus_map,L, 'omitnan'),[T R L]);
-contourf(bond.bins{R}, bond.bins{T}, log10(modulus_average * 1e6));
+modulus_average = permute(mean(1./bond.modulus_map(key),L, 'omitnan'),[T R L]);
+contourf(bond.bins{R}, bond.bins{T}, log10(abs(modulus_average * 1e-6)));
 C.YAxisLocation = 'Right';
 C.XAxisLocation = 'Top';
 C.YDir = 'normal';
 colorbar('Location', 'northoutside');
 C.CLim = ModLim;
-title('Log Mean Shear Modulus [Pa]', 'FontSize', 12);
-ylabel(C, 'T [mm]');
+title(['Log Mean Compliance ', key ' Pa^{-1}'], 'FontSize', 12);
+ylabel(C, 'Tangential [mm]');
+grid on;
+grid minor;
 
 
 %% D
 subplot(D);
-modulus_average = permute(mean(bond.modulus_map,T, 'omitnan'),[L R T]);
-contourf(bond.bins{R}, bond.bins{L}, log10(modulus_average * 1e6));
+modulus_average = permute(mean(1./bond.modulus_map(key),T, 'omitnan'),[L R T]);
+contourf(bond.bins{R}, bond.bins{L}, log10(abs(modulus_average * 1e-6)));
 D.YAxisLocation = 'Right';
 D.YDir = 'reverse';
 % colorbar('Location', 'eastoutside');
 D.CLim = ModLim;
-xlabel(D, 'R [mm]');
-ylabel(D, 'L [mm]');
+xlabel(D, 'Radial [mm]');
+ylabel(D, 'Longitudinal [mm]');
+grid on;
+grid minor;
 
 
 %%
@@ -113,5 +121,5 @@ y = 1.25 + side_lengths(T);
 text(A, x, y, bond.sample_name, 'Units', 'inches',...
      'HorizontalAlignment', 'center', 'FontSize', 14);
           
-disp('done');
+fprintf('PRETTY BOND: %s, %s\n', bond.sample_name, key);
 end
