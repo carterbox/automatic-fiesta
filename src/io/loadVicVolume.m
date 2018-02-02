@@ -34,12 +34,12 @@ figure(); boxplot(data(:,7:13), 'Labels',headers);
 title('Raw VicVolume data');
 data = data(data(:,7)~=-1,:);
 
-for i = 7:6 %7:13
-    q = prctile(data(:,i),[5 95]);
-    bad = data(:,i) < q(1) | data(:,i) > q(2);
-    data = data(~bad,:);
-    fprintf('REMOVE OUTLIARS: %s, %0.2f%%\n', headers{i-6},sum(bad)/numel(bad)*100);
-end
+% for i = 7:6 %7:13
+%     q = prctile(data(:,i),[5 95]);
+%     bad = data(:,i) < q(1) | data(:,i) > q(2);
+%     data = data(~bad,:);
+%     fprintf('REMOVE OUTLIARS: %s, %0.2f%%\n', headers{i-6},sum(bad)/numel(bad)*100);
+% end
 figure(); boxplot(data(:,7:13), 'Labels',headers);
 title('Reduced VicVolume data');
 
