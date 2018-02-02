@@ -90,7 +90,7 @@ end
 function mask = expand_simple(info, feature_name, scan_index)
 
 % load and convert mask to boolean
-mask = imstackload([info.dataLocation info.featureMasks.(feature_name).image{scan_index}]) > 0;
+mask = imstackload([info.dataLocation info.featureMasks.(feature_name).image]) > 0;
 
 if ndims(mask) > 3
     
@@ -130,7 +130,7 @@ end
 function mask = expand_compound(info, feature_name, subfeature_name, scan_index)
 
 % load and convert mask to boolean
-mask = imstackload([info.dataLocation info.featureMasks.(feature_name).(subfeature_name).image{scan_index}]) > 0;
+mask = imstackload([info.dataLocation info.featureMasks.(feature_name).(subfeature_name).image]) > 0;
 
 if ndims(mask) > 3
     
